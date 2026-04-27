@@ -1,0 +1,14 @@
+{"id": "apple2023_q001", "question": "What were Apple's total net sales in fiscal 2023?", "gold_answer": "383285", "gold_scale": "million", "expected_source_pages": [24, 31], "answer_type": "span"}
+{"id": "apple2023_q002", "question": "What were Apple's Americas net sales in fiscal 2023?", "gold_answer": "162560", "gold_scale": "million", "expected_source_pages": [24], "answer_type": "span"}
+{"id": "apple2023_q003", "question": "What were Apple's Europe net sales in fiscal 2023?", "gold_answer": "94294", "gold_scale": "million", "expected_source_pages": [24], "answer_type": "span"}
+{"id": "apple2023_q004", "question": "What were Apple's iPhone net sales in fiscal 2023?", "gold_answer": "200583", "gold_scale": "million", "expected_source_pages": [25], "answer_type": "span"}
+{"id": "apple2023_q005", "question": "What were Apple's Services net sales in fiscal 2023?", "gold_answer": "85200", "gold_scale": "million", "expected_source_pages": [25], "answer_type": "span"}
+{"id": "apple2023_q006", "question": "What were Apple's research and development expenses in fiscal 2023?", "gold_answer": "29915", "gold_scale": "million", "expected_source_pages": [26, 31], "answer_type": "span"}
+{"id": "apple2023_q007", "question": "What was Apple's gross margin in fiscal 2023?", "gold_answer": "169148", "gold_scale": "million", "expected_source_pages": [31], "answer_type": "span"}
+{"id": "apple2023_q008", "question": "What was Apple's operating income in fiscal 2023?", "gold_answer": "114301", "gold_scale": "million", "expected_source_pages": [31], "answer_type": "span"}
+{"id": "apple2023_q009", "question": "What was Apple's net income in fiscal 2023?", "gold_answer": "96995", "gold_scale": "million", "expected_source_pages": [31, 32, 34], "answer_type": "span"}
+{"id": "apple2023_q010", "question": "What were Apple's cash and cash equivalents as of September 30, 2023?", "gold_answer": "29965", "gold_scale": "million", "expected_source_pages": [33], "answer_type": "span"}
+{"id": "apple2023_q011", "question": "What were Apple's total assets as of September 30, 2023?", "gold_answer": "352583", "gold_scale": "million", "expected_source_pages": [33], "answer_type": "span"}
+{"id": "apple2023_q012", "question": "What were Apple's total liabilities as of September 30, 2023?", "gold_answer": "290437", "gold_scale": "million", "expected_source_pages": [33], "answer_type": "span"}
+{"id": "apple2023_q013", "question": "By what percentage did Apple's total net sales change in fiscal 2023 compared with fiscal 2022?", "gold_answer": "-3", "gold_scale": "percent", "expected_source_pages": [24], "answer_type": "span"}
+{"id": "apple2023_q014", "question": "What were Apple's total current assets as of September 30, 2023?", "gold_answer": "143566", "gold_scale": "million", "expected_source_pages": [33], "answer_type": "span"}

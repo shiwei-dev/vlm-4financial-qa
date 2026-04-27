@@ -1,0 +1,19 @@
+# 忽略输出的权重文件和压缩包
+outputs/
+# outputs.tar.gz
+
+# 忽略日志文件
+swanlog/
+
+# 忽略数据集
+dataset_tatdqa/
+
+# Python 默认的缓存文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# 环境变量或本地配置
+.env

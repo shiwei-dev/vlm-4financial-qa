@@ -1,0 +1,7 @@
+transformers>=4.57.0
+peft
+sentence-transformers
+numpy
+pymupdf
+pillow
+torch
