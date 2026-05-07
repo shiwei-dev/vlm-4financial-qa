@@ -1,4 +1,4 @@
-# 📊基于 Qwen3-VL 的证据约束金融财报多模态问答系统
+# 基于 Qwen3-VL 的证据约束金融财报多模态问答系统
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C.svg)](https://pytorch.org/)
@@ -10,7 +10,7 @@
 
 ---
 
-## ✨ 核心架构与设计哲学
+## ✨ 核心架构
 
 区别于常规的“黑盒 QA”或简单的“图文对话”，本系统的核心设计理念是** “可审计与强约束” **。任务流被严密拆解为三层架构：
 
@@ -52,7 +52,7 @@
 
 <div align="center">
   <img src="./images/eval_curve.png" alt="Evaluation Curve" width="60%">
-  <p><em>图：SwanLab 记录的 eval 曲线</em></p>
+  <p><em>图：SwanLab 记录的验证集上的 eval 曲线</em></p>
 </div>
 
 ---
@@ -89,7 +89,7 @@
 
 ---
 
-## 🚀 快速上手指南 (Quick Start)
+##  快速实现 (Quick Start)
 
 ### 1. 环境准备
 ```bash
