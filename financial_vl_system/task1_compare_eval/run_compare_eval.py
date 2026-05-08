@@ -19,9 +19,9 @@ from task1_compare_eval.metrics import compute_metrics
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Compare base Qwen3-VL-4B vs fine-tuned checkpoint on same samples")
+    parser = argparse.ArgumentParser(description="Compare base Qwen3-VL vs fine-tuned checkpoint on same samples")
     parser.add_argument("--data_file", type=str, required=True, help="swift-style JSONL test/dev file")
-    parser.add_argument("--base_model", type=str, default="Qwen/Qwen3-VL-4B-Instruct")
+    parser.add_argument("--base_model", type=str, default="Qwen/Qwen3-VL-8B-Instruct")
     parser.add_argument("--adapter_path", type=str, required=True, help="best checkpoint adapter dir, e.g. checkpoint-1100")
     parser.add_argument("--output_dir", type=str, required=True)
     parser.add_argument("--dtype", type=str, default="bf16", choices=["bf16", "fp16", "fp32"])
@@ -149,7 +149,7 @@ def main() -> int:
         samples,
         base_processor,
         base_model,
-        "base_qwen3_vl_4b",
+        "base_qwen3_vl_8b",
         args.device,
         args.max_new_tokens,
         args.temperature,
@@ -159,7 +159,7 @@ def main() -> int:
         samples,
         ft_processor,
         ft_model,
-        "ft_qwen3_vl_4b_checkpoint",
+        "ft_qwen3_vl_8b_checkpoint",
         args.device,
         args.max_new_tokens,
         args.temperature,
