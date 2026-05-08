@@ -5,3 +5,4 @@ numpy
 pymupdf
 pillow
 torch
+gradio>=4.44.0

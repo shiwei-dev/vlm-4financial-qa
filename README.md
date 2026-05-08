@@ -10,6 +10,34 @@
 
 ---
 
+## 新增/修改内容
+
+1. `financial_vl_system/task2_rag/web_ui.py`
+   - Gradio WebUI：上传 PDF、输入问题、自动执行 task2 解析/索引/检索/重排/问答。
+   - 展示答案、完整 JSON 树、source pages、运行日志。
+   - 对溯源页面画红框；如果后续 parser 输出 `bbox` / `layout_blocks[*].bbox`，会高亮具体区块。
+
+2. `financial_vl_system/common/json_guard.py`
+   - 对模型输出做 JSON fence 清理、宽松解析、schema 校验和字段补齐。
+   - 统一输出 `json_ok`、`schema_ok`、`schema_errors`，避免“解析失败就完全不可用”。
+
+3. `financial_vl_system/task2_rag/answerer.py`
+   - 接入 `json_guard.coerce_answer_json()`。
+   - 强制 source_pages 限定在检索到的页面集合内；缺失时回退到 retrieval pages。
+
+4. `financial_vl_system/task1_compare_eval/metrics.py`
+   - 增加 `answer_f1`，保留 `answer_em/scale_em/joint_em/json_parse_rate`。
+
+5. `financial_vl_system/task1_compare_eval/run_compare_eval.py`
+   - 在 summary 中增加 `base_answer_f1/ft_answer_f1/delta_answer_f1`。
+
+6. `financial_vl_system/requirements.txt`
+   - 增加 `gradio>=4.44.0`。
+
+7. `financial_vl_system/examples/run_web_ui.sh`
+   - WebUI 一键启动脚本。
+---
+
 ## ✨ 核心架构
 
 区别于常规的“黑盒 QA”或简单的“图文对话”，本系统的核心设计理念是** “可审计与强约束” **。任务流被严密拆解为三层架构：
@@ -64,6 +92,7 @@
 * `scale_em`: 量级精确匹配率 (单位如 thousand/million 判断正确)
 * `joint_em`: 联合精确匹配率 (数值与量级**同时正确**才算对)
 * `json_parse_rate`: 结构化 JSON 解析成功率
+* `answer_f1`: answer 字段的 token-level F1，用于 list/span 类答案的部分匹配诊断；金融数值类题目仍以 `joint_em` 作为主指标。
 
 **Base 模型 vs Fine-tuned 模型效果对比 (示例数据)：**
 
@@ -80,7 +109,24 @@
 ## 🖥️ WebUI 系统交互展示
 
 为了提供完整的工程交付体验，本系统基于 Gradio / Streamlit 构建了交互式 Web 界面。
-* **特性**：支持用户直接上传 PDF 财报，输入自然语言提问；系统会分屏展示推理结果、完整的 JSON 解析树，并高亮溯源原始财报的对应页面与图表区块。
+> **特性**：支持用户直接上传 PDF 财报，输入自然语言提问；系统会分屏展示推理结果、完整的 JSON 解析树，并高亮溯源原始财报的对应页面与图表区块。
+- 支持上传 PDF 财报；
+- 输入自然语言问题；
+- 自动跑完整 Task2 pipeline：PDF 解析 → 索引构建 → Dense Retrieval → Rerank → Answer；
+- 分屏展示：
+  - 推理结果；
+  - 完整 JSON 解析树；
+  - source_pages 溯源页面；
+  - 运行日志；
+- 对溯源页画红框高亮。
+
+  当前 doc_parser.py 的 chunk 主要是文本 chunk，没有 bbox 坐标，所以我做成了“页面级高亮 + 兼容未来 bbox 区块高亮”。如果后续 parser 输出 layout_blocks[*].bbox 或 chunks[*].bbox，WebUI 会自动画具体图表/表格区块；现有 parser 的 chunk 结构确实没有 bbox。
+
+启动：
+```Bash
+cd financial_vl_system
+bash examples/run_web_ui.sh
+```
 
 <div align="center">
   <img src="./images/webui_demo.png" alt="WebUI Interface Demo" width="80%">
@@ -118,8 +164,7 @@ python pure_transformers_qwen3_vl_sft.py \
 ```
 ### 3. Task 1: 模型独立评测 (Compare Evaluation)
 运行评测脚本，对比 Base 模型与 LoRA Adapter 模型在测试集上的量化指标差异：
-```
-Bash
+```Bash
 python task1_compare_eval/run_compare_eval.py \
   --data_file ./outputs/tatdqa_test_swift.jsonl \
   --base_model Qwen/Qwen3-VL-8B-Instruct \

@@ -84,10 +84,12 @@ def build_analysis_table(base_rows: List[Dict[str, Any]], ft_rows: List[Dict[str
     for sample_id, ft_row in ft_by_id.items():
         base_row = base_by_id[sample_id]
         base_joint = int(
-            base_row["pred_answer"] == base_row["gold_answer"] and base_row["pred_scale"] == base_row["gold_scale"]
+            base_row["pred_answer"] == base_row["gold_answer"]
+            and base_row["pred_scale"] == base_row["gold_scale"]
         )
         ft_joint = int(
-            ft_row["pred_answer"] == ft_row["gold_answer"] and ft_row["pred_scale"] == ft_row["gold_scale"]
+            ft_row["pred_answer"] == ft_row["gold_answer"]
+            and ft_row["pred_scale"] == ft_row["gold_scale"]
         )
         rows.append(
             {
@@ -121,7 +123,7 @@ def save_analysis_csv(rows: List[Dict[str, Any]], path: Path) -> None:
         writer.writerows(rows)
 
 
-if __name__ == "__main__":
+def main() -> int:
     args = parse_args()
     output_dir = ensure_dir(args.output_dir)
     samples = load_jsonl(args.data_file)
@@ -144,10 +146,24 @@ if __name__ == "__main__":
     )
 
     base_rows = run_model(
-        samples, base_processor, base_model, "base_qwen3_vl_4b", args.device, args.max_new_tokens, args.temperature, args.top_p
+        samples,
+        base_processor,
+        base_model,
+        "base_qwen3_vl_4b",
+        args.device,
+        args.max_new_tokens,
+        args.temperature,
+        args.top_p,
     )
     ft_rows = run_model(
-        samples, ft_processor, ft_model, "ft_qwen3_vl_4b_checkpoint", args.device, args.max_new_tokens, args.temperature, args.top_p
+        samples,
+        ft_processor,
+        ft_model,
+        "ft_qwen3_vl_4b_checkpoint",
+        args.device,
+        args.max_new_tokens,
+        args.temperature,
+        args.top_p,
     )
 
     save_jsonl(base_rows, output_dir / "predictions_base.jsonl")
@@ -167,6 +183,9 @@ if __name__ == "__main__":
         "base_joint_em": metrics["base"]["joint_em"],
         "ft_joint_em": metrics["ft"]["joint_em"],
         "delta_joint_em": metrics["ft"]["joint_em"] - metrics["base"]["joint_em"],
+        "base_answer_f1": metrics["base"]["answer_f1"],
+        "ft_answer_f1": metrics["ft"]["answer_f1"],
+        "delta_answer_f1": metrics["ft"]["answer_f1"] - metrics["base"]["answer_f1"],
         "base_json_parse_rate": metrics["base"]["json_parse_rate"],
         "ft_json_parse_rate": metrics["ft"]["json_parse_rate"],
         "delta_json_parse_rate": metrics["ft"]["json_parse_rate"] - metrics["base"]["json_parse_rate"],
@@ -176,3 +195,8 @@ if __name__ == "__main__":
     }
     save_json(summary, output_dir / "result_analysis_summary.json")
     print(f"Saved comparison results to {output_dir}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

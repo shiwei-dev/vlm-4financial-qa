@@ -4,6 +4,7 @@ import argparse
 from typing import Any, Dict, List
 
 from common.io_utils import build_answer_schema_output, extract_first_json_object, load_jsonl, save_jsonl
+from common.json_guard import build_json_schema_instruction, coerce_answer_json
 from common.modeling import generate_from_messages, load_qwen_vl_model
 from task2_rag.schemas import ANSWER_SYSTEM_PROMPT
 
@@ -28,17 +29,17 @@ def build_messages(question: str, pages: List[Dict[str, Any]]) -> List[Dict[str,
     for page in pages:
         page_refs.append(int(page["page_num"]))
         content.append({"type": "image", "image": page["image_path"]})
+
     text_lines = [
         f"Question: {question}",
         f"Available pages: {page_refs}",
+        build_json_schema_instruction(page_refs),
         "For each page, brief metadata:",
     ]
     for page in pages:
         summary = page.get("structured", {}).get("page_summary", "")
         native = page.get("native_text", "")[:800]
-        text_lines.append(
-            f"- page {page['page_num']}: summary={summary} | native_text={native}"
-        )
+        text_lines.append(f"- page {page['page_num']}: summary={summary} | native_text={native}")
     content.append({"type": "text", "text": "\n".join(text_lines)})
     return [
         {"role": "system", "content": ANSWER_SYSTEM_PROMPT},
@@ -46,7 +47,7 @@ def build_messages(question: str, pages: List[Dict[str, Any]]) -> List[Dict[str,
     ]
 
 
-if __name__ == "__main__":
+def main() -> int:
     args = parse_args()
     records = load_jsonl(args.retrieval_file)
     processor, model = load_qwen_vl_model(
@@ -61,6 +62,7 @@ if __name__ == "__main__":
     for record in records:
         pages = record.get("top_pages_reranked") or record.get("top_pages") or []
         pages = pages[: args.top_k]
+        page_nums = [int(p["page_num"]) for p in pages]
         messages = build_messages(record["question"], pages)
         raw = generate_from_messages(
             processor=processor,
@@ -70,21 +72,35 @@ if __name__ == "__main__":
             max_new_tokens=args.max_new_tokens,
             temperature=0.0,
         )
-        parsed = extract_first_json_object(raw) or {}
-        answer_payload = build_answer_schema_output(raw)
+        # parsed = extract_first_json_object(raw) or {}
+        # answer_payload = build_answer_schema_output(raw)
+        answer_payload = coerce_answer_json(
+            raw,
+            allowed_pages=page_nums,
+            default_source_pages=page_nums,
+        )
         outputs.append(
             {
                 "id": record.get("id", ""),
                 "question": record["question"],
                 "answer": answer_payload["answer"],
                 "scale": answer_payload["scale"],
-                "source_pages": parsed.get("source_pages", [p["page_num"] for p in pages]),
-                "abstain": bool(parsed.get("abstain", False)),
-                "confidence": str(parsed.get("confidence", "low")),
+                "source_pages": answer_payload["source_pages"],
+                "abstain": answer_payload["abstain"],
+                "confidence": answer_payload["confidence"],
+                "json_ok": answer_payload["json_ok"],
+                "schema_ok": answer_payload["schema_ok"],
+                "schema_errors": answer_payload["schema_errors"],
                 "raw_output": raw,
-                "retrieved_pages": [p["page_num"] for p in pages],
+                "parsed_output": answer_payload["parsed"],
+                "retrieved_pages": page_nums,
             }
         )
 
     save_jsonl(outputs, args.output_file)
     print(f"Saved QA outputs to {args.output_file}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
