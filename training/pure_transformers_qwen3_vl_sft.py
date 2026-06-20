@@ -18,11 +18,11 @@ Features
 
 Example
 -------
-python pure_transformers_qwen3_vl_sft.py \
+python training/pure_transformers_qwen3_vl_sft.py \
   --model_name_or_path Qwen/Qwen3-VL-4B-Instruct \
-  --train_file ./vlm/outputs/tatdqa_train_swift.jsonl \
-  --eval_file ./vlm/outputs/tatdqa_dev_swift.jsonl \
-  --output_dir ./vlm/outputs/qwen3_vl_4b_hf_lora \
+  --train_file ./outputs/tatdqa_train_swift.jsonl \
+  --eval_file ./outputs/tatdqa_dev_swift.jsonl \
+  --output_dir ./outputs/qwen3_vl_4b_hf_lora \
   --per_device_train_batch_size 1 \
   --per_device_eval_batch_size 1 \
   --gradient_accumulation_steps 8 \

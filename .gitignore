@@ -15,5 +15,11 @@ __pycache__/
 *.pyd
 .Python
 
-# 环境变量或本地配置
+# 环境变量或本地配置 / Secrets - never commit
 .env
+.env.local
+.env.*.local
+*.key
+*.pem
+*_secret*
+*_token*
